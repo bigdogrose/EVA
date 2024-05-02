@@ -1,0 +1,61 @@
+import openai
+import os
+import paho.mqtt.client as paho
+import paho.mqtt.client as mqtt
+
+
+openai.api_key = os.getenv('OPENAI_API_KEY', '')
+
+def remove_line_with_text(file_path, text_to_search):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+
+    with open(file_path, 'w', encoding='utf-8') as file:
+        for line in lines:
+            if text_to_search not in line:
+                file.write(line)
+
+# Usage
+
+
+def read_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        tempvar = file.read()
+        #print(tempvar)
+        return tempvar
+
+def ask_openai(message):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Replace with the correct chat model name
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": message}
+            ]
+        )
+        return response.choices[0].message['content'] if response.choices else "No response"
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return "An error occured"
+# Usage
+arr = os.listdir('C:\\EmpData')
+file_content=""
+for i in arr :
+    remove_line_with_text('C:\\EmpData\\'+i, 'device_not_recording')
+    remove_line_with_text('C:\\EmpData\\'+i, 'device_not_worn_correctly')
+    print (i)
+    file_content = read_file('C:\\EmpData\\'+i)+file_content
+response = ask_openai(file_content)
+print(response)
+
+broker_address = "mqtt.eclipseprojects.io"
+port = 1883
+
+def on_publish(client,userdata,result):
+    print("data published \n")
+    pass
+
+client1 = paho.Client("test1")
+client1.on_publish = on_publish
+client1.connect(broker_address,port)
+ret = client1.publish("Eva/test", response)
