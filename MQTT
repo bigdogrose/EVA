@@ -1,0 +1,109 @@
+import paho.mqtt.client as mqtt
+
+ 
+
+import time
+
+ 
+
+ 
+
+ 
+
+broker_address = "mqtt.eclipseprojects.io"
+
+ 
+
+broker_port = 1883
+
+ 
+
+topic = "Eva/bulb1"
+
+ 
+
+ 
+
+ 
+
+LIGHT_OFF = "OFF"
+
+ 
+
+LIGHT_ON = "ON"
+
+ 
+
+ 
+
+ 
+
+client = mqtt.Client()
+
+ 
+
+ 
+
+ 
+
+client.connect(broker_address, broker_port, 60)
+
+ 
+
+ 
+
+ 
+
+def turn_on_light():
+
+ 
+
+    client.publish(topic, LIGHT_ON)
+
+ 
+
+ 
+
+ 
+
+def turn_off_light():
+
+ 
+
+    client.publish(topic, LIGHT_OFF)
+
+ 
+
+ 
+
+ 
+
+turn_on_light()
+
+ 
+
+# Wait for the light to turn on
+
+ 
+
+time.sleep(2)
+
+ 
+
+turn_off_light()
+
+ 
+
+# Wait for the light to turn off
+
+ 
+
+time.sleep(2)
+
+ 
+
+ 
+
+ 
+
+client.disconnect()
